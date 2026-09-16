@@ -27,15 +27,24 @@ namespace SeverinoBot
                 LogLevel = LogLevel.Debug
             });
 
-            DiscordChannel defaultChannel = null;
-            if (ulong.TryParse(defaultChannelId, out var channelId))
-                defaultChannel = await discordClient.GetChannelAsync(channelId);
-            if (defaultChannel != null)
-                await defaultChannel.SendMessageAsync("Salve salve bolsonaroi");
-
             discordClient.MessageCreated += MessageController.OnMessageCreated;
 
             await discordClient.ConnectAsync();
+
+            if (ulong.TryParse(defaultChannelId, out var channelId))
+            {
+                try
+                {
+                    var defaultChannel = await discordClient.GetChannelAsync(channelId);
+                    if (defaultChannel != null)
+                        await defaultChannel.SendMessageAsync("Salve salve bolsonaroi");
+                }
+                catch
+                {
+                    // Garante que o bot continue online mesmo se a mensagem falhar
+                }
+            }
+
             await Task.Delay(-1);
         }
 
